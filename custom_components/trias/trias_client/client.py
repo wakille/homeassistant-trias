@@ -79,7 +79,11 @@ class Client:
             raise exceptions.HttpError(req.status_code, req.text)
 
         response = req.text
-        response_dict = trias_payload = xmltodict.parse(response)
+
+        try:
+            response_dict = trias_payload = xmltodict.parse(response)
+        except xml.parsers.expat.ExpatError:
+            raise exceptions.ApiError(response)
 
         if next(iter(response_dict)) == "trias:Trias":
             response = response.replace("trias:", "")
